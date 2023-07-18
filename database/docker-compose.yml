@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  master:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: brt_gps
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: always
