@@ -41,6 +41,12 @@ A pipeline deverá ser construída subindo uma instância local do Prefect (em P
     - Windows: `pip install -r requirements.txt`
     - Linux: `pip install -r requirements.txt`
 
+### Preparação DBT
+
+1. Configure os dados do banco em:
+    - Windows: `C:\Users\[NOME_USUARIO]\.dbt\profiles.yml`
+    - Linux: `~/dbt/profiles.yml`
+
 ### Rodando
 
 1. Garanta que o container docker do banco de dados está ativo (`docker-compose up`)
