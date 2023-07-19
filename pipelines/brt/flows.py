@@ -9,6 +9,7 @@ from pipelines.brt.tasks import \
     extract_brt_gps_data_json, \
     transform_json_data_to_df, \
     transform_identify_empty_values, \
+    transform_epoch_to_datetime, \
     load_data_to_csv, \
     load_data_to_db
 
@@ -29,6 +30,7 @@ with Flow("ETL - Dados GPS BRT", schedule=schedule, run_config=run_config) as fl
     # NOTE: Data Transformation
     brt_gps_data_df = transform_json_data_to_df(brt_gps_data_json)
     brt_gps_data_df = transform_identify_empty_values(brt_gps_data_df)
+    brt_gps_data_df = transform_epoch_to_datetime(brt_gps_data_df)
 
     # NOTE: Data Loading
     load_data_to_csv(brt_gps_data_df)

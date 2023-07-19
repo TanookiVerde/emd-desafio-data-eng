@@ -38,6 +38,14 @@ def transform_identify_empty_values(gps_data_df):
 
     return gps_data_df
 
+@task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
+def transform_epoch_to_datetime(gps_data_df):
+    convert_epoch_to_datetime = lambda dt_epoch : datetime.datetime.fromtimestamp( dt_epoch / 1000.0 )
+
+    gps_data_df['dataHora'] = gps_data_df['dataHora'].apply(convert_epoch_to_datetime)
+
+    return gps_data_df
+
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def load_data_to_csv(gps_data_df):
@@ -68,6 +76,7 @@ def load_data_to_db(gps_data_df):
     )
 
     logger.info("Envio de Dados")
+    # TODO
     executor.run(
         query   = "INSERT INTO registros_brt ()",
         data    = tuple(),
