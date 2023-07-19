@@ -11,9 +11,10 @@ A pipeline deverá ser construída subindo uma instância local do Prefect (em P
 
 ## Organização do Projeto
 
-- `analysis/`: Onde ficam os notebooks de análise de dados, utilizados para detectar quais seriam os campos do banco e quais tratamentos seriam necessários para os dados
-- `database/`: Onde ficam os arquivos relacionados ao banco de dados PostgreSQL: o configurador do orquestrador e o arquivo SQL de inicialização do banco.
-- `pipelines/`: Onde ficam os arquivos relacionado ao pipeline Prefect de ETL
+- `analysis/`: onde ficam os notebooks de análise de dados, utilizados para detectar quais seriam os campos do banco e quais tratamentos seriam necessários para os dados;
+- `database/`: onde ficam os arquivos relacionados ao banco de dados PostgreSQL: o configurador do orquestrador e o arquivo SQL de inicialização do banco;
+- `transformations/`: onde fica o projeto DBT, com os modelos e outros arquivos relevantes de transformação de dados;
+- `pipelines/`: onde ficam os arquivos relacionado ao pipeline Prefect de ETL.
 
 ## Ambiente de Execução
 
@@ -47,3 +48,29 @@ A pipeline deverá ser construída subindo uma instância local do Prefect (em P
     - Windows: `env\Scripts\Activate.ps1`
     - Linux: `source env/bin/activate`
 1. Rode na raiz do projeto o comando: `python run.py`
+
+## Debugging
+
+### Preparação
+
+1. Utilizando VSCode, crie uma pasta na raiz `.vscode`
+1. Crie um arquivo `launch.json` e cole o seguinte conteúdo nele:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Projeto",
+            "type": "python",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
+```
+### Depurando
+
+1. Entre na seção "Run and Debug" na barra lateral esquerda
+1. Clique em Play
