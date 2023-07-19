@@ -11,5 +11,6 @@ CREATE TABLE registro_brt (
     sentido                 VARCHAR(10),
     trajeto                 VARCHAR(100),
     hodometro               DECIMAL,
-    direcao                 VARCHAR(10)
+    direcao                 VARCHAR(10),
+    created_at              TIMESTAMP DEFAULT current_timestamp
 );
