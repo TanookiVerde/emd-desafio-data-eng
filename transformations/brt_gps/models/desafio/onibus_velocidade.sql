@@ -1,8 +1,8 @@
 {{ config(materialized='table') }}
 
 select 
-    placa, 
+    codigo, 
     latitude, 
     longitude, 
     velocidade
-from registros_brt
+from registro_brt

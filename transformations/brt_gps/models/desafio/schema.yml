@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: onibus_velocidade
+    description: "Possui dados resumidos sobre ônibus, posição e velocidade"
+    columns:
+      - name: codigo
+        description: "Código do ônibus"
+        tests:
+          - not_null      
+      - name: latitude
+        description: "Representa a Latitude do ônibus durante o registro"
+        tests:
+          - not_null
+      - name: longitude
+        description: "Representa a Longitude do ônibus durante o registro"
+        tests:
+          - not_null
+      - name: velocidade
+        description: "Representa a velocidade do ônibus durante o registro"
+        tests:
+          - not_null
+
