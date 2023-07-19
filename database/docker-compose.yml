@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  master:
+  db:
     image: postgres:latest
     environment:
       POSTGRES_DB: brt_gps
