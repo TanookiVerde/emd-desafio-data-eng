@@ -53,10 +53,11 @@ flowchart LR
 1. Entre na pasta `database/`
 1. Rode `docker-compose up` no terminal
 1. O banco de dados Postgres deve estar disponível:
-    - Host/Post: localhost:5432
-    - DB Name: brt_gps
-    - Usuário: admin
-    - Senha: password
+    - Host: `localhost`
+    - Port: `5432`
+    - DB Name: `brt_gps`
+    - Usuário: `admin`
+    - Senha: `password`
 
 ### Preparação de Pipelines
 
