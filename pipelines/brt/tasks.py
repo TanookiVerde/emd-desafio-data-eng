@@ -9,7 +9,7 @@ from prefect import task
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def extract_brt_gps_data_json():
+def extract_brt_gps_data_json() -> dict:
     """
     Extrai da API de GPS do BRT registros em Json
     """
@@ -24,7 +24,7 @@ def extract_brt_gps_data_json():
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def transform_json_data_to_df(gps_data_json):
+def transform_json_data_to_df(gps_data_json: dict) -> pd.DataFrame:
     """
     Recebe um Json com registros de GPS BRT e converte para Dataframe
     """
@@ -37,7 +37,7 @@ def transform_json_data_to_df(gps_data_json):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def transform_identify_empty_values(gps_data_df):
+def transform_identify_empty_values(gps_data_df: pd.DataFrame) -> pd.DataFrame:
     """
     Identifica valores vazios no Dataframe e substitui para Nulo
     """
@@ -49,7 +49,7 @@ def transform_identify_empty_values(gps_data_df):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def transform_epoch_to_datetime(gps_data_df):
+def transform_epoch_to_datetime(gps_data_df: pd.DataFrame) -> pd.DataFrame:
     """
     Transforma coluna dataHora de Epochs (milliseconds) para Datetime
     """
@@ -61,7 +61,7 @@ def transform_epoch_to_datetime(gps_data_df):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def transform_rename_columns(gps_data_df):
+def transform_rename_columns(gps_data_df: pd.DataFrame) -> pd.DataFrame:
     """
     Renomeia colunas do DF para mapeamento com colunas do banco de dados
     """
@@ -73,7 +73,7 @@ def transform_rename_columns(gps_data_df):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def load_data_to_csv(gps_data_df):
+def load_data_to_csv(gps_data_df: pd.DataFrame) -> pd.DataFrame:
     """
     Salva Dataframe em CSV de forma acumulativa
     """
@@ -95,7 +95,7 @@ def load_data_to_csv(gps_data_df):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def load_data_to_db(table_name, dataframe):
+def load_data_to_db(table_name: str, dataframe: pd.DataFrame) -> pd.DataFrame:
     """
     Recebe Dataframe e insere seus dados no banco de dados
     """
