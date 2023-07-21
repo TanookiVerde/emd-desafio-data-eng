@@ -10,6 +10,41 @@ _Retirada do Repositório Original e Adaptada para tópicos_
 - Por fim, crie uma tabela derivada usando o DBT. A tabela derivada deverá conter o ID do onibus, posição e sua a velocidade.
 - A pipeline deverá ser construída subindo uma instância local do Prefect (em Python). Utilize a versão *0.15.9* do Prefect.
 
+## Arquitetura da Solução
+```mermaid
+flowchart LR
+    api[(API BRT)]
+    db[(BD PostgreSQL)]
+
+    subgraph Flow - Recuperar Dados GPS BRT:
+        id1[extract_brt_gps_data_json]
+        id2[transform_json_data_to_df]
+        id3[transform_identify_empty_values]
+        id4[transform_epoch_to_datetime]
+        id5[load_data_to_csv]
+
+        direction TB
+        id1-->id2-->id3-->id4-->id5
+    end
+
+    subgraph Flow - Armazenar Dados GPS BRT:
+        id6[extract_brt_gps_data_csv]
+        id7[load_data_to_bd]
+
+        direction TB
+        id6-->id7
+    end
+
+    subgraph Transformações DBT:
+        id8[onibus_velocidade.sql]
+    end
+
+    id1---api
+    id7---db
+    id8---db
+    id5--A cada 10 minutos-->id6
+```
+
 ## Organização do Projeto
 
 - `analysis/`: onde ficam os notebooks de análise de dados, utilizados para detectar quais seriam os campos do banco e quais tratamentos seriam necessários para os dados;
