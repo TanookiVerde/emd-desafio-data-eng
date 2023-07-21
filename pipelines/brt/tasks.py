@@ -49,17 +49,19 @@ def transform_epoch_to_datetime(gps_data_df):
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def load_data_to_csv(gps_data_df):
+    CSV_PATH = "outputs/registros.csv"
+
     logger = prefect.context.get("logger")
 
     logger.info("Carregando Dados já Registrados CSV")
     try:
-        current_data = pd.read_csv("registros.csv")
+        current_data = pd.read_csv(CSV_PATH)
     except FileNotFoundError:
         current_data = pd.DataFrame()
 
     logger.info("Acumulando Dados no CSV")
     accumulated_data = pd.concat([current_data, gps_data_df])
-    accumulated_data.to_csv("registros.csv", index=False, header=True)
+    accumulated_data.to_csv(CSV_PATH, index=False, header=True)
 
     pass 
 
@@ -76,7 +78,6 @@ def load_data_to_db(gps_data_df):
     )
 
     logger.info("Envio de Dados")
-    # TODO
     executor.run(
         query   = "INSERT INTO registros_brt ()",
         data    = tuple(),
