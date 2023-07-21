@@ -42,8 +42,7 @@ flowchart LR
     id1---api
     id7---db
     id8---db
-    direction TB
-    id5-->id6
+    id5--A cada 10 minutos-->id6
 ```
 
 ## Organização do Projeto
