@@ -22,17 +22,10 @@ flowchart LR
         id3[transform_identify_empty_values]
         id4[transform_epoch_to_datetime]
         id5[load_data_to_csv]
-
-        direction TB
-        id1-->id2-->id3-->id4-->id5
-    end
-
-    subgraph Flow - Armazenar Dados GPS BRT:
-        id6[extract_brt_gps_data_csv]
         id7[load_data_to_bd]
 
         direction TB
-        id6-->id7
+        id1-->id2-->id3-->id4-->id5-->id7
     end
 
     subgraph Transformações DBT:
@@ -42,7 +35,6 @@ flowchart LR
     id1---api
     id7---db
     id8---db
-    id5--A cada 10 minutos-->id6
 ```
 
 ## Organização do Projeto
@@ -51,6 +43,7 @@ flowchart LR
 - `database/`: onde ficam os arquivos relacionados ao banco de dados PostgreSQL: o configurador do orquestrador e o arquivo SQL de inicialização do banco;
 - `transformations/`: onde fica o projeto DBT, com os modelos e outros arquivos relevantes de transformação de dados;
 - `pipelines/`: onde ficam os arquivos relacionado ao pipeline Prefect de ETL.
+- `outputs/`: onde fica o arquivo CSV gerado.
 
 ## Ambiente de Execução
 
