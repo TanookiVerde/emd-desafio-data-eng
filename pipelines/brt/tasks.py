@@ -1,15 +1,18 @@
 import datetime
 import requests
+import pandas as pd
+
+from sqlalchemy import create_engine
 
 import prefect
 from prefect import task
-from prefect.tasks.postgres.postgres import PostgresExecute
-
-import pandas as pd
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def extract_brt_gps_data_json():
+    """
+    Extrai da API de GPS do BRT registros em Json
+    """
     logger = prefect.context.get("logger")
 
     logger.info("Fazendo Requisição de Dados de GPS do BRT")
@@ -22,6 +25,9 @@ def extract_brt_gps_data_json():
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def transform_json_data_to_df(gps_data_json):
+    """
+    Recebe um Json com registros de GPS BRT e converte para Dataframe
+    """
     logger = prefect.context.get("logger")
 
     logger.info("Fazendo Transformação de JSON para Dataframe")
@@ -32,14 +38,21 @@ def transform_json_data_to_df(gps_data_json):
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def transform_identify_empty_values(gps_data_df):
+    """
+    Identifica valores vazios no Dataframe e substitui para Nulo
+    """
     gps_data_df.sort_values(by='codigo',inplace=True)
     gps_data_df.replace("", pd.NA, inplace=True)
     gps_data_df.replace(" ", pd.NA, inplace=True)
 
     return gps_data_df
 
+
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
 def transform_epoch_to_datetime(gps_data_df):
+    """
+    Transforma coluna dataHora de Epochs (milliseconds) para Datetime
+    """
     convert_epoch_to_datetime = lambda dt_epoch : datetime.datetime.fromtimestamp( dt_epoch / 1000.0 )
 
     gps_data_df['dataHora'] = gps_data_df['dataHora'].apply(convert_epoch_to_datetime)
@@ -48,15 +61,30 @@ def transform_epoch_to_datetime(gps_data_df):
 
 
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def load_data_to_csv(gps_data_df):
-    CSV_PATH = "outputs/registros.csv"
+def transform_rename_columns(gps_data_df):
+    """
+    Renomeia colunas do DF para mapeamento com colunas do banco de dados
+    """
+    gps_data_df.rename(
+        columns = {'dataHora' : 'datahora'}, 
+        inplace = True
+    )
+    return gps_data_df
 
+
+@task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
+def load_data_to_csv(gps_data_df):
+    """
+    Salva Dataframe em CSV de forma acumulativa
+    """
+    CSV_PATH = "outputs/registros.csv"
     logger = prefect.context.get("logger")
 
-    logger.info("Carregando Dados já Registrados CSV")
     try:
         current_data = pd.read_csv(CSV_PATH)
+        logger.info("Abrindo arquivo CSV com registros para expansão")
     except FileNotFoundError:
+        logger.info("Iniciando novo arquivo CSV para registros")
         current_data = pd.DataFrame()
 
     logger.info("Acumulando Dados no CSV")
@@ -65,23 +93,21 @@ def load_data_to_csv(gps_data_df):
 
     pass 
 
+
 @task(max_retries=3, retry_delay=datetime.timedelta(minutes=10))
-def load_data_to_db(gps_data_df):
+def load_data_to_db(table_name, dataframe):
+    """
+    Recebe Dataframe e insere seus dados no banco de dados
+    """
     logger = prefect.context.get("logger")
 
-    logger.info("Iniciando Conexão com Banco de Dados")
-    executor = PostgresExecute(
-        db_name = "brt_gps",
-        user    = "admin",
-        host    = "password",
-        port    = 5432
-    )
-
     logger.info("Envio de Dados")
-    executor.run(
-        query   = "INSERT INTO registros_brt ()",
-        data    = tuple(),
-        commit  = True
+    dataframe.to_sql(
+        name        = table_name, 
+        con         = create_engine('postgresql://admin:password@localhost:5432/brt_gps'),
+        method      = 'multi',
+        index       = False,
+        if_exists   = 'append'
     )
 
     pass
